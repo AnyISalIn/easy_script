@@ -13,14 +13,14 @@ function update_vaneq {
   [[ $? -eq 0 ]] && return 0 || return 1
 }
 
-function print_log(name) {
-    echo "INFO: $(date +%F-%H:%M) update ${name} $(ip a|grep eth0|grep 'inet\>'|awk -F' ' '{print $2}') code ${status}" >> /var/log/vaneq_update_script.log
+function print_log {
+    echo "INFO: $(date +%F-%H:%M) update $1 $(ip a|grep eth0|grep 'inet\>'|awk -F' ' '{print $2}') code ${status}" >> /var/log/vaneq_update_script.log
 }
 
 function run {
   for i in update_vaneq update_frontend;do
     $i && status='success' || status='failed'
-    print_log($i)
+    print_log $i
   done
 }
 
