@@ -76,5 +76,5 @@ function start_evmserver {
 }
 
 for fun in connect_test ssh_trust sync_key encrypt sync_database_config start_evmserver; do
-    ${fun} || echo '${fun} failed'
+    ${fun}
 done
