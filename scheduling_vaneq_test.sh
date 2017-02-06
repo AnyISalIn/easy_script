@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 # Jenkins Scheduler VaneQ Update and Test Script
 
 
@@ -38,8 +39,23 @@ function api_state {
     done
 }
 
+
+function db_setup_and_restore {
+    pushd /var/www/miq/vmdb
+        export DISABLE_DATABASE_ENVIRONMENT_CHECK=1
+        rake db:setup > /dev/null
+        if [ $? -eq 0 ]; then
+            ps -ef|grep MIQ|grep -v grep|awk -F' ' '{print $2}'|xargs kill -9
+            rake evm:db:restore:local -- --local-file /opt/manageiq/test_vaneq_api/test.sql
+        fi
+    popd
+}
+
 source /etc/profile.d/evm.sh
 update_vaneq || exit 1
 sleep 60
 api_state || exit 1
 run_test || exit 1
+db_setup_and_restore || exit 1
+rm -rf {.*,*}
+exit 0
